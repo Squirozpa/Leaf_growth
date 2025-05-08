@@ -22,11 +22,15 @@ dWn_dt = lambda W, C, N, Zn: (p* R5 *W) - u*  W * f(C, N, Zn) #Ecuacion diferenc
 dWz_dt = lambda W, C, N, Zn: (p* R7 *W) - t*  W * f(C, N, Zn) #Ecuacion diferencial del peso en Zinc donde 1:u:t es la proporcion de C:N:Zn
 
 def tomato_growth(t, state):
-    W, C, N, Zn = state
-    dW = dW_dt(W, C, N, Zn)
-    dWc = dWc_dt(W, C, N, Zn)
-    dWn = dWn_dt(W, C, N, Zn)
-    dWz = dWz_dt(W, C, N, Zn)
+    W_t, WC_t, WN_t, WZn_t = state
+    C_t = WC_t / W_t
+    N_t = WN_t / W_t
+    Zn_t = WZn_t / W_t
+
+    dW = dW_dt(W_t, C_t, N_t, Zn_t)
+    dWc = dWc_dt(W_t, C_t, N_t, Zn_t)
+    dWn = dWn_dt(W_t, C_t, N_t, Zn_t)
+    dWz = dWz_dt(W_t, C_t, N_t, Zn_t)
     return [dW, dWc, dWn, dWz]
 
 def solve_tomato_growth(t_span, W0, C0, N0, Zn0):
@@ -34,22 +38,46 @@ def solve_tomato_growth(t_span, W0, C0, N0, Zn0):
     return sol.t, sol.y
 
 def plot_growth(t, W, C, N, Zn):
-    plt.figure(figsize=(10, 6))
-    plt.plot(t, W, label='Weight (W)')
-    plt.plot(t, C, label='Carbon (C)')
-    plt.plot(t, N, label='Nitrogen (N)')
-    plt.plot(t, Zn, label='Zinc (Zn)')
+    plt.figure(figsize=(12, 10))
+
+    # Subplot for Weight (W)
+    plt.subplot(4, 1, 1)
+    plt.plot(t, W, label='Weight (W)', color='blue')
     plt.xlabel('Time')
-    plt.ylabel('Amount')
-    plt.title('Tomato Growth Model')
-    plt.legend()
+    plt.ylabel('Weight (W)')
+    plt.title('Weight Over Time')
     plt.grid()
-    plt.show() 
+
+    # Subplot for Carbon (C)
+    plt.subplot(4, 1, 2)
+    plt.plot(t, C, label='Carbon (C)', color='green')
+    plt.xlabel('Time')
+    plt.ylabel('Carbon (C)')
+    plt.title('Carbon Over Time')
+    plt.grid()
+
+    # Subplot for Nitrogen (N)
+    plt.subplot(4, 1, 3)
+    plt.plot(t, N, label='Nitrogen (N)', color='orange')
+    plt.xlabel('Time')
+    plt.ylabel('Nitrogen (N)')
+    plt.title('Nitrogen Over Time')
+    plt.grid()
+
+    # Subplot for Zinc (Zn)
+    plt.subplot(4, 1, 4)
+    plt.plot(t, Zn, label='Zinc (Zn)', color='red')
+    plt.xlabel('Time')
+    plt.ylabel('Zinc (Zn)')
+    plt.title('Zinc Over Time')
+    plt.grid()
+
+    plt.tight_layout()
+    plt.show()
 
 W0 = 5
 Wc = 0.01
 Wn = 2
 Wz= 2
-t_span = (0, 55) 
+t_span = (0, 50) 
 t, (W, C, N, Zn) = solve_tomato_growth(t_span, W0, Wc, Wn, Wz)
-plot_growth(t, W, C, N, Zn)
