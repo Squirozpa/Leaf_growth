@@ -1,82 +1,68 @@
 import numpy as np
-from scipy.integrate import solve_ivp
+from scipy.integrate import solve_ivp, odeint
 import matplotlib.pyplot as plt
 
 """PARAMETERS"""
-PR = 7776  # Photosynthetic rate
+PR = 7742  # Photosynthetic rate
 SNAR = 21400  # Specific nitrogen assimilation rate
-mu = 0.05 #Nitrogen to carbon ratio
-alpha = 1123.2 #transpiration rate
+mu = 20 #Nitrogen to carbon ratio
+TR = 1123.2 #transpiration rate
 
 beta_leaf = 302 #Maintnance leaf respiration rate (carbon)
 beta_root = 1382.4 #Maintenance root respiration rate (carbon)
-beta_stem = 6.054 #Maintenance stem respiration 1rate (carbon)
+beta_stem = 6.054 #Maintenance stem respiration rate (carbon)
 
-gamma_root = 1000
+gamma_root = 900
  #Maintenance respiration rate (nitrogen)
-gamma_leaf = 6 #Maintenance respiration rate (nitrogen)
+gamma_leaf = 32 #Maintenance respiration rate (nitrogen)
+gamma_stem = 0.1
 
-r_root = 0.000296 #Leaf to root ratio
-r_carbon = 37500 #carbon umol /g leaf
-r_area = 375 # cm2 of leaf area / g of leaf
-r_leaf = r_area /r_carbon #Leaf area to carbon ratio
+r_rwr = 0.00296 #Leaf to root ratio
+r_carbon = 375000 #carbon umol /g leaf
+r_leaf = 375 # cm2 of leaf area / g of leaf
+k = r_leaf/r_carbon #Leaf area to carbon ratio
+r_swr = 1/50
+
+overlap = 0.8 #Leaf area overlap factor
 """Functions"""
-C_in = lambda A: PR * A
-N_in = lambda RW: SNAR * RW
-N_eff = lambda N:  N /mu # Effective nitrogen
+A_eff = lambda A: A**overlap
+RW_t = lambda A:  r_rwr * A_eff(A)
+SW_t = lambda A:  r_swr * A
 
-C_out = lambda A, RW: alpha * A + beta_leaf * A + beta_root * RW
-N_out = lambda A, RW: gamma_leaf * A + gamma_root * RW
+C_uptake = lambda A: A_eff(A)*PR/2 - A*TR/2
+N_uptake = lambda A: RW_t(A)*SNAR
+C_maint = lambda A: beta_leaf * A + beta_root * RW_t(A) + beta_stem * SW_t(A)
+N_maint = lambda A: gamma_leaf * A + gamma_root * RW_t(A) + gamma_stem * SW_t(A)
 
-U_t = lambda C, N: min(C, N_eff(N)) #Available carbon and nitrogen
-RW_t = lambda A: A * r_root #Root weight
+C_available = lambda A: C_uptake(A) - C_maint(A)
+N_available = lambda A: N_uptake(A) - N_maint(A)
+
+C_growth = lambda A: (C_available(A) + mu * N_available(A) - abs(C_available(A) - mu * N_available(A))) / 2
 
 """ODEs"""
-dC_dt = lambda A, RW, C, N: C_in(A) - C_out(A, RW) - U_t(C, N) #Carbon balance
-dN_dt = lambda A, RW, C, N: N_in(RW) - N_out(A, RW) - U_t(C,N)*mu #Nitrogen balance
-dA_dt = lambda C, N: r_leaf * U_t(C,N)
+dA_dt = lambda A: C_growth(A) *k
+"""Simulation"""
 
-"""ODE system"""
-def growth_model(t, state):
-    A, C, N = state
-    RW = RW_t(A)  # Calculate root weight based on leaf area
-    dA = dA_dt(C, N)
-    dC = dC_dt(A, RW, C, N)
-    dN = dN_dt(A, RW, C, N)
-    return [dA, dC, dN]
+# Time settings
+dt = 0.1  # Time step (days)
+T = 50  # Total simulation duration (days)
+time = np.arange(0, T, dt)
 
-A0 = 1  # Initial leaf area (cm²)
-N0 = 10  # Initial nitrogen (g)
-C0 = 0  # Initial carbon (g)
+# Initial conditions
+A = np.zeros(len(time))  # Array to store leaf area over time
+A[0] = 1  # Initial leaf area (cm²)
 
-t_span = (0, 10)  # Time span for the simulation (days)
-t_eval = np.linspace(t_span[0], t_span[1], 100)  # Time points to evaluate the solution
+# Simulation loop
+for i in range(1, len(time)):
+    dA = dA_dt(A[i-1])  # Compute growth rate
+    print(C_available(A[i-1]), N_available(A[i-1]), C_growth(A[i-1]), A[i-1])
+    A[i] = A[i-1] + dA * dt  # Euler's method update
 
-sol = solve_ivp(growth_model, t_span, [A0, C0, N0], t_eval=t_eval)
+# Plot results
 
-"Plotting the results"
-plt.figure(figsize=(12, 10))
-plt.subplot(3, 1, 1)
-plt.plot(sol.t, sol.y[0], label='Leaf Area (A)', color='green')
-plt.xlabel('Time (days)')
-plt.ylabel('Leaf Area (cm²)')
-plt.title('Leaf Area Growth Over Time')
+plt.plot(time, A, label="Leaf Area (Euler)")
+plt.xlabel("Time (days)")
+plt.ylabel("Leaf Area (cm²)")
 plt.legend()
-plt.grid()
-plt.subplot(3, 1, 2)
-plt.plot(sol.t, sol.y[1], label='Carbon (C)', color='blue')
-plt.xlabel('Time (days)')
-plt.ylabel('Carbon (umol)')
-plt.title('Carbon Growth Over Time')
-plt.legend()
-plt.grid()
-plt.subplot(3, 1, 3)
-plt.plot(sol.t, sol.y[2], label='Nitrogen (N)', color='orange')
-plt.xlabel('Time (days)')
-plt.ylabel('Nitrogen (umol)')
-plt.title('Nitrogen Growth Over Time')
-plt.legend()
-plt.grid()
-plt.tight_layout()
 plt.show()
 
