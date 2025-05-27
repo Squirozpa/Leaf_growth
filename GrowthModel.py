@@ -15,7 +15,7 @@ beta_stem = 6.054 #Maintenance stem respiration rate (carbon)
 gamma_root = 900
  #Maintenance respiration rate (nitrogen)
 gamma_leaf = 32 #Maintenance respiration rate (nitrogen)
-gamma_stem = 0.1
+gamma_stem = 2
 
 r_rwr = 0.00296 #Leaf to root ratio
 r_carbon = 375000 #carbon umol /g leaf
@@ -23,7 +23,7 @@ r_leaf = 375 # cm2 of leaf area / g of leaf
 k = r_leaf/r_carbon #Leaf area to carbon ratio
 r_swr = 1/50
 
-overlap = 0.8 #Leaf area overlap factor
+overlap = 0.9 #Leaf area overlap factor
 """Functions"""
 A_eff = lambda A: A**overlap
 RW_t = lambda A:  r_rwr * A_eff(A)
@@ -45,7 +45,7 @@ dA_dt = lambda A: C_growth(A) *k
 
 # Time settings
 dt = 0.1  # Time step (days)
-T = 50  # Total simulation duration (days)
+T = 100 # Total simulation duration (days)
 time = np.arange(0, T, dt)
 
 # Initial conditions
