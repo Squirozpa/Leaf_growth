@@ -6,19 +6,18 @@ import matplotlib.pyplot as plt
 PR = 7742  # Photosynthetic rate
 SNAR = 21400  # Specific nitrogen assimilation rate
 mu = 20 #Nitrogen to carbon ratio
-TR = 1123.2 #transpiration rate
+TR = 2123.2 #transpiration rate
 
-beta_leaf = 302 #Maintnance leaf respiration rate (carbon)
-beta_root = 1382.4 #Maintenance root respiration rate (carbon)
+beta_leaf = 1150 #Maintnance leaf respiration rate (carbon)
+beta_root = 50082.4 #Maintenance root respiration rate (carbon)
 beta_stem = 6.054 #Maintenance stem respiration rate (carbon)
 
-gamma_root = 900
- #Maintenance respiration rate (nitrogen)
-gamma_leaf = 32 #Maintenance respiration rate (nitrogen)
+gamma_leaf = 55 #Maintenance respiration rate (nitrogen)
+gamma_root = 900 #Maintenance respiration rate (nitrogen)
 gamma_stem = 2
 
 r_rwr = 0.00296 #Leaf to root ratio
-r_carbon = 375000 #carbon umol /g leaf
+r_carbon = 605000 #carbon umol /g leaf (esto solo considera el carbono de la hoja y no el de la planta completa)
 r_leaf = 375 # cm2 of leaf area / g of leaf
 k = r_leaf/r_carbon #Leaf area to carbon ratio
 r_swr = 1/50
@@ -26,7 +25,7 @@ r_swr = 1/50
 overlap = 0.9 #Leaf area overlap factor
 """Functions"""
 A_eff = lambda A: A**overlap
-RW_t = lambda A:  r_rwr * A_eff(A)
+RW_t = lambda A:  r_rwr * A
 SW_t = lambda A:  r_swr * A
 
 C_uptake = lambda A: A_eff(A)*PR/2 - A*TR/2
