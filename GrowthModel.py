@@ -58,10 +58,26 @@ for i in range(1, len(time)):
     A[i] = A[i-1] + dA * dt  # Euler's method update
 
 # Plot results
+plt.figure(figsize=(10, 8))
 
-plt.plot(time, A, label="Leaf Area (Euler)")
+# Subplot 1: Leaf Area Growth
+plt.subplot(2, 1, 1)
+plt.plot(time, A, label="Leaf Area (Euler Method)", color='blue')
+plt.title("Leaf Area Growth Over Time")
 plt.xlabel("Time (days)")
 plt.ylabel("Leaf Area (cm²)")
 plt.legend()
-plt.show()
+plt.grid()  
 
+# Subplot 2: Available Resources
+plt.subplot(2, 1, 2)
+plt.plot(time, C_available(A), label="Carbon Available", color='green')
+plt.plot(time, N_available(A), label="Nitrogen Available", color='orange')
+plt.xlabel("Time (days)")
+plt.ylabel("Available Resources")
+plt.legend()
+plt.grid()  
+
+# Adjust layout and show the plot
+plt.tight_layout()
+plt.show()
