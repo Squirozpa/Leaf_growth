@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/Scripts/python.exe -c ':*)",
+      "Bash(.venv/Scripts/python.exe -c \"import numpy; print\\(numpy.__version__\\)\")",
+      "Bash(python -c \"import numpy; print\\(numpy.__version__\\)\")",
+      "Bash(python -c ':*)",
+      "Bash(python main.py params/default.json results.csv)",
+      "Bash(python main.py /tmp/test_nitrogen.json /tmp/test_nitrogen_results.csv)",
+      "Read(//tmp/**)",
+      "Bash(python main.py params/test_nitrogen.json results_nitrogen.csv)",
+      "Bash(python -c \"from visualize.allometry import plot_lma, plot_root_mass, plot_shoot_mass, plot_partition; print\\('allometry imports OK'\\)\")",
+      "Bash(python -c \"from visualize.allometry import plot_LMA, plot_r_root, plot_r_shoot, plot_k; print\\('allometry imports OK'\\)\")",
+      "Bash(python -c \"from visualize.allometry import plot_LMA, plot_R_root, plot_R_shoot, plot_k; print\\('allometry imports OK'\\)\")"
+    ]
+  }
+}

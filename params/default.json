@@ -1,0 +1,38 @@
+{
+    "simulation": {
+        "dt": 0.041666667,
+        "total_time": 89,
+        "start_time": 5,
+        "starting_leaf_area": 0.05,
+        "nitrogen": -1
+    },
+    "physiology": {
+        "PR_base": 42,
+        "p": 0.5,
+        "r_leaf": 12.024,
+        "r_root": 1682.4,
+        "r_shoot": 604.8,
+        "f_N_leaf": 0.21,
+        "beta": 8660,
+        "rho": 37500
+    },
+    "nitrogen": {
+        "SNAR_max": 3360,
+        "K_m": 400
+    },
+    "photosynthesis": {
+        "a_PR": 55.5,
+        "b_PR": 2.7,
+        "N_max": 0.9
+    },
+    "light": {
+        "max_irradiance_area": 50,
+        "partial_shade_band_width": 50
+    },
+    "leaf_root_ratio": {
+        "LR_0": 1.9,
+        "a_LR": 12.5,
+        "b_LR": 1900,
+        "adjustment_factor": 0.5
+    }
+}
